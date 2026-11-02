@@ -1,0 +1,21 @@
+# Python
+env/
+__pycache__/
+*.egg-info/
+.pytest_cache/
+
+# Data and secrets
+data/*
+!data/.gitkeep
+.env
+
+# Terraform (state and tfvars contain account details)
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+crash.log
+
+# Local tooling
+starship.toml
+.DS_Store

@@ -1,0 +1,20 @@
+# 2 simulated hours, 30 robots, 4 of them wearing out at different rates.
+seed: 11
+time_scale: 100.0
+
+fleet:
+  size: 30
+  defaults:
+    wear_rate: 0.00002        # healthy baseline
+  overrides:
+    amr-004: {wear_rate: 0.00015}
+    amr-011: {wear_rate: 0.00020}
+    amr-019: {wear_rate: 0.00030}
+    amr-026: {wear_rate: 0.00040}
+
+behavior:
+  name: all_publishing
+
+sink:
+  type: jsonl
+  path: data/predictive.jsonl

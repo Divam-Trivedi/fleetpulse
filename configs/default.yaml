@@ -1,0 +1,35 @@
+seed: 42
+time_scale: 1.0          # 10.0 = simulate 10x faster than wall clock
+
+fleet:
+  size: 10
+  id_prefix: amr
+  defaults:
+    publish_hz: 1.0
+    max_speed: 1.5       # m/s
+    wear_rate: 0.00002   # motor wear fraction per simulated second
+    fault_prob: 0.002    # random fault probability per simulated second
+    noise_std: 0.05
+  overrides:             # per-robot tweaks, e.g. a robot that is wearing out fast
+    amr-003:
+      wear_rate: 0.0005
+    amr-007:
+      publish_hz: 2.0
+
+behavior:
+  name: mixed_fleet      # all_publishing | mixed_fleet | random_on_off
+  params:
+    continuous_pct: 60
+    random_pct: 30
+    abrupt_pct: 10
+
+sink:
+  type: jsonl            # stdout | jsonl | null
+  path: data/telemetry.jsonl
+
+# Switch to AWS by changing the sink block to:
+# sink:
+#   type: firehose
+#   stream_name: fleetpulse-telemetry
+#   region: us-west-2
+#   profile: fleetpulse

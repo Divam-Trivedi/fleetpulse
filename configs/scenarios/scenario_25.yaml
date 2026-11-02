@@ -1,0 +1,137 @@
+seed: 25
+time_scale: 100.0
+fleet:
+  size: 30
+  defaults:
+    wear_rate: 2.0e-05
+  overrides:
+    amr-000:
+      ambient_temp: 24.5
+      motor_current_per_speed: 2.34
+      motor_idle_current: 1.14
+    amr-001:
+      ambient_temp: 22.6
+      motor_current_per_speed: 2.3
+      motor_idle_current: 1.05
+    amr-002:
+      ambient_temp: 20.5
+      motor_current_per_speed: 2.36
+      motor_idle_current: 0.9
+    amr-003:
+      ambient_temp: 23.7
+      motor_current_per_speed: 1.94
+      motor_idle_current: 1.04
+      wear_rate: 0.000112
+    amr-004:
+      ambient_temp: 21.5
+      motor_current_per_speed: 2.15
+      motor_idle_current: 1.13
+    amr-005:
+      ambient_temp: 26.1
+      motor_current_per_speed: 2.24
+      motor_idle_current: 1.05
+    amr-006:
+      ambient_temp: 29.9
+      motor_current_per_speed: 1.74
+      motor_idle_current: 0.94
+    amr-007:
+      ambient_temp: 25.6
+      motor_current_per_speed: 1.68
+      motor_idle_current: 1.19
+    amr-008:
+      ambient_temp: 27.6
+      motor_current_per_speed: 1.68
+      motor_idle_current: 1.03
+      wear_rate: 0.000152
+    amr-009:
+      ambient_temp: 25.0
+      motor_current_per_speed: 1.75
+      motor_idle_current: 0.86
+    amr-010:
+      ambient_temp: 25.5
+      motor_current_per_speed: 1.66
+      motor_idle_current: 1.03
+    amr-011:
+      ambient_temp: 26.2
+      motor_current_per_speed: 1.7
+      motor_idle_current: 1.15
+    amr-012:
+      ambient_temp: 20.5
+      motor_current_per_speed: 1.74
+      motor_idle_current: 1.13
+    amr-013:
+      ambient_temp: 22.6
+      motor_current_per_speed: 1.94
+      motor_idle_current: 1.02
+    amr-014:
+      ambient_temp: 25.2
+      motor_current_per_speed: 2.0
+      motor_idle_current: 1.0
+    amr-015:
+      ambient_temp: 25.8
+      motor_current_per_speed: 1.65
+      motor_idle_current: 1.13
+    amr-016:
+      ambient_temp: 23.4
+      motor_current_per_speed: 1.64
+      motor_idle_current: 0.96
+      wear_rate: 0.000257
+    amr-017:
+      ambient_temp: 29.8
+      motor_current_per_speed: 2.1
+      motor_idle_current: 0.98
+    amr-018:
+      ambient_temp: 25.7
+      motor_current_per_speed: 1.78
+      motor_idle_current: 1.05
+    amr-019:
+      ambient_temp: 24.2
+      motor_current_per_speed: 1.65
+      motor_idle_current: 0.85
+    amr-020:
+      ambient_temp: 21.1
+      motor_current_per_speed: 2.15
+      motor_idle_current: 1.15
+    amr-021:
+      ambient_temp: 29.1
+      motor_current_per_speed: 1.78
+      motor_idle_current: 0.86
+    amr-022:
+      ambient_temp: 31.4
+      motor_current_per_speed: 1.9
+      motor_idle_current: 0.87
+    amr-023:
+      ambient_temp: 26.9
+      motor_current_per_speed: 2.09
+      motor_idle_current: 1.02
+      wear_rate: 0.000262
+    amr-024:
+      ambient_temp: 25.4
+      motor_current_per_speed: 1.84
+      motor_idle_current: 1.0
+    amr-025:
+      ambient_temp: 25.5
+      motor_current_per_speed: 2.15
+      motor_idle_current: 0.98
+      wear_rate: 0.000243
+    amr-026:
+      ambient_temp: 24.3
+      motor_current_per_speed: 2.39
+      motor_idle_current: 0.84
+    amr-027:
+      ambient_temp: 29.1
+      motor_current_per_speed: 1.93
+      motor_idle_current: 1.12
+    amr-028:
+      ambient_temp: 28.5
+      motor_current_per_speed: 2.05
+      motor_idle_current: 1.04
+    amr-029:
+      ambient_temp: 22.8
+      motor_current_per_speed: 1.61
+      motor_idle_current: 1.1
+behavior:
+  name: all_publishing
+sink:
+  type: jsonl
+  path: data/scenario_25.jsonl
