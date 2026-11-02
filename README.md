@@ -4,7 +4,7 @@ An end-to-end data engineering project on robotics telemetry: a Python fleet sim
 
 Built to show the full path a robotics company's data takes, with **no hardware**: a configurable simulator stands in for a warehouse AMR fleet, and everything downstream is real cloud infrastructure defined as code.
 
-* [ ]  ****[](https://)************Architecture
+## Architecture
 
 ```mermaid
 flowchart LR
