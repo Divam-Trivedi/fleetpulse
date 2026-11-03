@@ -1,5 +1,6 @@
 # FleetPulse
 ![CI](https://github.com/Divam-Trivedi/fleetpulse/actions/workflows/ci.yml/badge.svg)
+
 An end-to-end data engineering project on robotics telemetry: a Python fleet simulator streams into AWS, lands in Snowflake, and powers fleet analytics, silent-robot detection and a predictive-maintenance model that scores in plain SQL.
 
 Built to show the full path a robotics company's data takes, with **no hardware**: a configurable simulator stands in for a warehouse AMR fleet, and everything downstream is real cloud infrastructure defined as code.
