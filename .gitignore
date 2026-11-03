@@ -7,6 +7,7 @@ __pycache__/
 # Data and secrets
 data/*
 !data/.gitkeep
+!/data/results
 .env
 
 # Terraform (state and tfvars contain account details)

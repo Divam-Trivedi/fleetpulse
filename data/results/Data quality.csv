@@ -1,0 +1,8 @@
+CHECK_NAME,VALUE,SEVERITY
+raw_rows,1168648,info
+staging_rows,1168648,info
+raw_minus_staging_rows,0,info
+battery_out_of_range,0,error
+negative_motor_current,0,error
+unknown_status,0,error
+missing_sequence_numbers,0,error
