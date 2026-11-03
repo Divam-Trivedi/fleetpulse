@@ -1,4 +1,7 @@
+
 # FleetPulse
+![CI](https://github.com/Divam-Trivedi/fleetpulse/actions/workflows/ci.yml/badge.svg)
+
 ![CI](https://github.com/Divam-Trivedi/fleetpulse/actions/workflows/ci.yml/badge.svg)
 
 An end-to-end data engineering project on robotics telemetry: a Python fleet simulator streams into AWS, lands in Snowflake, and powers fleet analytics, silent-robot detection and a predictive-maintenance model that scores in plain SQL.
