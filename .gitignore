@@ -19,4 +19,10 @@ crash.log
 
 # Local tooling
 starship.toml
-.DS_Store
+.DS_Storebuild/
+*.p8
+*.pub
+
+# Keys
+*.pub
+*.p8

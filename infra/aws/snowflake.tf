@@ -21,8 +21,21 @@ variable "snowpipe_sqs_arn" {
   default     = ""
 }
 
+variable "snowpipe_parquet_enabled" {
+  description = "Set true after creating the Parquet pipe (snowflake/13_parquet_ingest.sql)."
+  type        = bool
+  default     = false
+}
+
+variable "snowpipe_sqs_arn_parquet" {
+  description = "Only if SHOW PIPES shows a different notification_channel for the Parquet pipe. Empty = reuse snowpipe_sqs_arn."
+  type        = string
+  default     = ""
+}
+
 locals {
-  sf_ready = var.snowflake_iam_user_arn != "" && var.snowflake_external_id != ""
+  sf_ready          = var.snowflake_iam_user_arn != "" && var.snowflake_external_id != ""
+  parquet_queue_arn = var.snowpipe_sqs_arn_parquet != "" ? var.snowpipe_sqs_arn_parquet : var.snowpipe_sqs_arn
 }
 
 data "aws_iam_policy_document" "snowflake_assume" {
@@ -51,7 +64,7 @@ resource "aws_iam_role" "snowflake" {
 data "aws_iam_policy_document" "snowflake_read" {
   statement {
     actions   = ["s3:GetObject", "s3:GetObjectVersion"]
-    resources = ["${aws_s3_bucket.raw.arn}/raw/telemetry/*"]
+    resources = ["${aws_s3_bucket.raw.arn}/raw/telemetry/*", "${aws_s3_bucket.raw.arn}/raw_parquet/telemetry/*"]
   }
   statement {
     actions   = ["s3:GetBucketLocation"]
@@ -63,7 +76,7 @@ data "aws_iam_policy_document" "snowflake_read" {
     condition {
       test     = "StringLike"
       variable = "s3:prefix"
-      values   = ["raw/telemetry/*", "raw/telemetry"]
+      values   = ["raw/telemetry/*", "raw/telemetry", "raw_parquet/telemetry/*", "raw_parquet/telemetry"]
     }
   }
 }
@@ -83,6 +96,16 @@ resource "aws_s3_bucket_notification" "snowpipe" {
     queue_arn     = var.snowpipe_sqs_arn
     events        = ["s3:ObjectCreated:*"]
     filter_prefix = "raw/telemetry/"
+  }
+
+  # Second, non-overlapping prefix for the Parquet delivery stream
+  dynamic "queue" {
+    for_each = var.snowpipe_parquet_enabled ? [local.parquet_queue_arn] : []
+    content {
+      queue_arn     = queue.value
+      events        = ["s3:ObjectCreated:*"]
+      filter_prefix = "raw_parquet/telemetry/"
+    }
   }
 }
 

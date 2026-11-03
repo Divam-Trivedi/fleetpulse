@@ -1,0 +1,12 @@
+#!/bin/bash
+# Runs once at first boot: install, run the simulation, then stop the instance (cost control).
+exec > >(tee /var/log/fleetpulse-run.log) 2>&1
+set -x
+dnf install -y git python3.11 python3.11-pip
+cd /opt
+git clone ${repo_url} fleetpulse
+cd fleetpulse
+python3.11 -m venv env
+./env/bin/pip install -e ".[aws]"
+./env/bin/fleetpulse run ${run_args} || true
+shutdown -h now
