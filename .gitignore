@@ -9,6 +9,7 @@ data/*
 !data/.gitkeep
 !/data/results
 .env
+build/
 
 # Terraform (state and tfvars contain account details)
 .terraform/
