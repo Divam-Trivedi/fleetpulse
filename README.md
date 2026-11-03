@@ -1,6 +1,4 @@
-
 # FleetPulse
-![CI](https://github.com/Divam-Trivedi/fleetpulse/actions/workflows/ci.yml/badge.svg)
 
 ![CI](https://github.com/Divam-Trivedi/fleetpulse/actions/workflows/ci.yml/badge.svg)
 
