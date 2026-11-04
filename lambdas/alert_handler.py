@@ -91,3 +91,5 @@ def lambda_handler(event, context):
         conn.close()
     log.info("alert run finished: %s", json.dumps(result, default=str))
     return result
+
+

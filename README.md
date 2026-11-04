@@ -63,12 +63,12 @@ flowchart LR
 
 ## Results
 
-Dataset: about 1.6 million records across 9 simulator runs: six 2-hour runs of 30 robots (27 robots wear out and trip an overtemp fault), a 10-minute mixed-fleet run, and two Parquet-path runs (one from EC2).
+Dataset: about 1.6 million records across 10 simulator runs: seven 2-hour JSON-path runs of 30 robots (the six used for training contain 27 robots that wear out and trip an overtemp fault), a 10-minute mixed-fleet run, and two Parquet-path runs (one from EC2).
 
 
 | Check                             | Result                                                                                                                                   |
 | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| Ingestion                         | 0 dropped records and 0 retries in every run; records sent equal records published                                                       |
+| Ingestion                         | 0 dropped records and 0 retries in every laptop-launched run; records sent equal records published                                       |
 | Silent-robot detection            | Mixed-fleet run of 20 robots: the 2 abrupt-stop robots were flagged, silent for 458 and 513 event-seconds                                |
 | Failure warning (in Snowflake)    | 27 of 27 failing robots alerted before the fault, **12 to 27 minutes ahead, median about 20**                                            |
 | False alarms                      | 2 of 153 healthy robots, both running at 84 °C, one degree under the trip point                                                         |
