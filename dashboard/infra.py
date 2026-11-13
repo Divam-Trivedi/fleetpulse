@@ -189,3 +189,20 @@ def terraform_destroy(confirm: str, s3=None, bucket: str | None = None, runner: 
     if r.returncode != 0:
         raise RuntimeError((r.stdout or "")[-1500:] + (r.stderr or "")[-1500:])
     return (r.stdout or "")[-1500:]
+
+
+# ---- CloudWatch helpers used by the live status ----
+def firehose_metric(cw, stream: str, metric: str, minutes: int, now: datetime | None = None) -> int:
+    now = now or datetime.now(timezone.utc)
+    resp = cw.get_metric_statistics(
+        Namespace="AWS/Firehose", MetricName=metric, Dimensions=[{"Name": "DeliveryStreamName", "Value": stream}],
+        StartTime=now - timedelta(minutes=minutes), EndTime=now, Period=60, Statistics=["Sum"])
+    return int(sum(p["Sum"] for p in resp.get("Datapoints", [])))
+
+
+def firehose_series(cw, stream: str, minutes: int = 60, now: datetime | None = None) -> list[tuple[datetime, int]]:
+    now = now or datetime.now(timezone.utc)
+    resp = cw.get_metric_statistics(
+        Namespace="AWS/Firehose", MetricName="IncomingRecords", Dimensions=[{"Name": "DeliveryStreamName", "Value": stream}],
+        StartTime=now - timedelta(minutes=minutes), EndTime=now, Period=60, Statistics=["Sum"])
+    return sorted((p["Timestamp"], int(p["Sum"])) for p in resp.get("Datapoints", []))

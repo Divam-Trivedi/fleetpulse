@@ -56,3 +56,8 @@ def data_quality(session) -> pd.DataFrame:
 def alert_log(session) -> pd.DataFrame:
     return _df(session, "SELECT run_id, robot_id, first_alert_ts, notified_at, source FROM ML.ALERT_LOG "
                         "ORDER BY notified_at DESC LIMIT 25")
+
+
+def robots_latest(session, run_id: str) -> pd.DataFrame:
+    return _df(session, "SELECT robot_id, status, is_silent, silent_for_s, battery_pct, motor_temp, motor_current, error_code, records, last_seen_ts "
+                        f"FROM MARTS.ROBOT_STATUS WHERE run_id = '{_run(run_id)}'")
