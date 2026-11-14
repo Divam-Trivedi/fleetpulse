@@ -15,6 +15,9 @@ def _iso(s: str | None):
     except ValueError:
         return None
 
+def _missing(exc: Exception) -> bool:
+    text = f"{type(exc).__name__} {exc}"
+    return any(k in text for k in ("ResourceNotFound", "NoSuchBucket", "404", "Not Found"))
 
 def collect_aws(c: SimpleNamespace, bucket: str | None = None) -> dict:
     out: dict = {"firehose": {}, "bucket": None, "lambda": None, "rule": None, "ec2": None, "error": None}
@@ -26,19 +29,36 @@ def collect_aws(c: SimpleNamespace, bucket: str | None = None) -> dict:
             out["error"] = out["error"] or f"{type(exc).__name__}: {str(exc)[:100]}"
             return None
 
+    def stream_status(name: str) -> str:
+        try:
+            return c.firehose.describe_delivery_stream(DeliveryStreamName=name)["DeliveryStreamDescription"]["DeliveryStreamStatus"]
+        except Exception as exc:
+            if "ResourceNotFound" in type(exc).__name__ or "ResourceNotFound" in str(exc):
+                return "NOT_FOUND"
+            raise
+
     for stream in infra.STREAMS:
-        status = guard(lambda s=stream: c.firehose.describe_delivery_stream(DeliveryStreamName=s)["DeliveryStreamDescription"]["DeliveryStreamStatus"])
+        status = guard(lambda s=stream: stream_status(s))
         out["firehose"][stream] = {
             "status": status,
             "incoming_5m": guard(lambda s=stream: infra.firehose_metric(c.cw, s, "IncomingRecords", 5)) or 0,
             "delivered_10m": guard(lambda s=stream: infra.firehose_metric(c.cw, s, "DeliveryToS3.Records", 10)) or 0,
         }
     if bucket:
-        out["bucket"] = guard(lambda: bool(c.s3.head_bucket(Bucket=bucket))) or False
+        try:
+            out["bucket"] = bool(c.s3.head_bucket(Bucket=bucket))
+        except Exception as exc:
+            out["bucket"] = False if _missing(exc) else None
+            if not _missing(exc):
+                out["error"] = out["error"] or f"{type(exc).__name__}: {str(exc)[:100]}"
     out["rule"] = guard(lambda: infra.rule_state(c.events))
     try:
         c.lam.get_function(FunctionName=infra.LAMBDA)
         out["lambda"] = True
+    except Exception as exc:
+        out["lambda"] = False if _missing(exc) else None
+        if not _missing(exc):
+            out["error"] = out["error"] or f"{type(exc).__name__}: {str(exc)[:100]}"
     except Exception:
         out["lambda"] = False
     out["ec2"] = guard(lambda: infra.find_instance(c.ec2))

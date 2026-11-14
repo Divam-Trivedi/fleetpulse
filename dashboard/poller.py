@@ -99,7 +99,13 @@ class Poller:
         c = self._ensure_aws()
         runner = self._cfg["runner"]
         try:
-            sim = runner.status() if runner is not None and runner.running else None
+            sim = None
+            if runner is not None and runner.running:
+                try:
+                    sim = runner.status()
+                except Exception:
+                    last = (self._prev or {}).get("sim") or {}
+                    sim = {"total_published": last.get("total") or 0}
         except Exception:
             sim = None
         aws_snap = None

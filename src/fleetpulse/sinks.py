@@ -172,8 +172,15 @@ class FirehoseSink(Sink):
         self._closing = True
         self._wake.set()
         if self._task:
-            await self._task
-        await self._drain()
+            try:
+                await asyncio.wait_for(self._task, timeout=30)
+            except asyncio.TimeoutError:
+                self._task.cancel()
+        try:
+            await asyncio.wait_for(self._drain(), timeout=30)
+        except asyncio.TimeoutError:
+            self.stats["dropped"] += len(self._buf)
+            self._buf.clear()
 
 
 def create_sink(cfg: SinkSettings) -> Sink:

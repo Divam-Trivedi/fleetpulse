@@ -65,7 +65,7 @@ def evaluate(snap: dict, prev: dict | None = None) -> list[Item]:
 
     if aws is None:
         items.append(Item(FLOW, "Data is reaching AWS", UNKNOWN, "Unknown: not connected to AWS"))
-    elif any(v.get("status") not in (None, "ACTIVE") for v in fh.values()):
+    elif any(v.get("status") not in (None, "ACTIVE", "NOT_FOUND") for v in fh.values()):
         items.append(Item(FLOW, "Data is reaching AWS", BAD, "Problem: a delivery stream is not ready"))
     elif incoming > 0:
         per = ", ".join(f"{_kind(k)} {int(v.get('incoming_5m') or 0):,}" for k, v in fh.items())
@@ -104,12 +104,20 @@ def evaluate(snap: dict, prev: dict | None = None) -> list[Item]:
         items.append(Item(AWS, "Connection to AWS", BAD if aws.get("error") else OK, aws.get("error") or "connected"))
         for k, v in fh.items():
             st_ = v.get("status")
-            items.append(Item(AWS, f"Delivery stream ({_kind(k)} format)", OK if st_ == "ACTIVE" else BAD if st_ else UNKNOWN,
-                              "ready" if st_ == "ACTIVE" else (st_ or "not found").lower()))
+            if st_ == "ACTIVE":
+                items.append(Item(AWS, f"Delivery stream ({_kind(k)} format)", OK, "ready"))
+            elif st_ == "NOT_FOUND":
+                items.append(Item(AWS, f"Delivery stream ({_kind(k)} format)", IDLE, "not deployed (removed, or never created)"))
+            elif st_:
+                items.append(Item(AWS, f"Delivery stream ({_kind(k)} format)", BAD, f"not ready ({st_.lower()})"))
+            else:
+                items.append(Item(AWS, f"Delivery stream ({_kind(k)} format)", UNKNOWN, "unknown"))
         if aws.get("bucket") is not None:
-            items.append(Item(AWS, "Storage bucket (S3)", OK if aws["bucket"] else BAD, "exists" if aws["bucket"] else "missing"))
+            items.append(Item(AWS, "Storage bucket (S3)", OK if aws["bucket"] else IDLE,
+                              "exists (still holds data, so it may need emptying)" if aws["bucket"] else "not deployed"))
         if aws.get("lambda") is not None:
-            items.append(Item(AWS, "Alert function (Lambda)", OK if aws["lambda"] else BAD, "deployed" if aws["lambda"] else "not found"))
+            items.append(Item(AWS, "Alert function (Lambda)", OK if aws["lambda"] else IDLE,
+                              "deployed" if aws["lambda"] else "not deployed (removed, or never created)"))
         rule = aws.get("rule")
         items.append(Item(AWS, "Alert timer (EventBridge)", OK if rule == "ENABLED" else IDLE,
                           {"ENABLED": "on: at-risk robots are checked automatically", "DISABLED": "off: alerts are only sent when you press Run alert check now"}.get(rule, "not set up")))

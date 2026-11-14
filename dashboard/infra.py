@@ -205,4 +205,4 @@ def firehose_series(cw, stream: str, minutes: int = 60, now: datetime | None = N
     resp = cw.get_metric_statistics(
         Namespace="AWS/Firehose", MetricName="IncomingRecords", Dimensions=[{"Name": "DeliveryStreamName", "Value": stream}],
         StartTime=now - timedelta(minutes=minutes), EndTime=now, Period=60, Statistics=["Sum"])
-    return sorted((p["Timestamp"], int(p["Sum"])) for p in resp.get("Datapoints", []))
+    return sorted((p["Timestamp"].astimezone(timezone.utc).replace(tzinfo=None), int(p["Sum"])) for p in resp.get("Datapoints", []))

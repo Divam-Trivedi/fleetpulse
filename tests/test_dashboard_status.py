@@ -166,7 +166,7 @@ def test_collect_aws_degrades_per_component():
         ec2=SimpleNamespace(describe_instances=lambda Filters: {"Reservations": []}))
     out = collect.collect_aws(c, "bucket")
     assert out["firehose"]["fleetpulse-telemetry"]["incoming_5m"] == 10 and out["rule"] == "DISABLED"
-    assert out["bucket"] is False and out["lambda"] is False and out["error"]
+    assert out["bucket"] is None and out["lambda"] is None and out["error"]
 
 
 def test_pipe_permission_problem_is_local_and_grey_not_a_red_connection_failure():
@@ -176,3 +176,20 @@ def test_pipe_permission_problem_is_local_and_grey_not_a_red_connection_failure(
     assert get(items, "Connection to Snowflake").level == status.OK
     pipe = get(items, "Data intake (Snowpipe TELEMETRY_PIPE)")
     assert pipe.level == status.UNKNOWN and "MONITOR" in pipe.detail
+
+def test_missing_bucket_and_lambda_are_not_deployed_not_errors():
+    class NotFound(Exception):
+        pass
+
+    def gone(**kw):
+        raise NotFound("404 Not Found")
+
+    c = SimpleNamespace(
+        firehose=SimpleNamespace(describe_delivery_stream=lambda DeliveryStreamName: {"DeliveryStreamDescription": {"DeliveryStreamStatus": "ACTIVE"}}),
+        cw=SimpleNamespace(get_metric_statistics=lambda **kw: {"Datapoints": []}),
+        s3=SimpleNamespace(head_bucket=gone),
+        lam=SimpleNamespace(get_function=gone),
+        events=SimpleNamespace(exceptions=SimpleNamespace(ResourceNotFoundException=KeyError), describe_rule=lambda Name: {"State": "DISABLED"}),
+        ec2=SimpleNamespace(describe_instances=lambda Filters: {"Reservations": []}))
+    out = collect.collect_aws(c, "bucket")
+    assert out["bucket"] is False and out["lambda"] is False and out["error"] is None

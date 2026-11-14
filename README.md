@@ -112,11 +112,10 @@ The full cloud build, alerting setup and teardown are in `docs/runbook.md`.
 
 ## Cost
 
-[Fill in from AWS Billing and Snowflake usage after the final run.] Controls used: a $10 AWS budget alert, a 5-credit Snowflake resource monitor, XS warehouse with 60-second auto-suspend, 14-day S3 lifecycle, dynamic-table lag of 5 minutes, alert schedule disabled by default, and an EC2 instance that stops itself when the run ends.
+Controls used: a $10 AWS budget alert, a 5-credit Snowflake resource monitor, XS warehouse with 60-second auto-suspend, 14-day S3 lifecycle, dynamic-table lag of 5 minutes, alert schedule disabled by default, and an EC2 instance that stops itself when the run ends.
 
 ## Not built / roadmap
 
-- Live dashboard. The controller API it would wrap exists and is tested; a Streamlit-in-Snowflake page over the existing views is the planned first version.
 - Typed Parquet loading with `MATCH_BY_COLUMN_NAME` and a timestamp column (the current path loads Parquet into VARIANT, so the format's columnar benefit goes unused).
 - Snowpipe Streaming for sub-minute latency (compared in the tradeoffs doc, not implemented).
 - Private subnet and VPC endpoints for the EC2 producer.

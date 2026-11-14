@@ -102,5 +102,9 @@ class SimRunner:
 
     def stop(self) -> None:
         if self._ctl and self._loop and self._thread and self._thread.is_alive():
-            asyncio.run_coroutine_threadsafe(self._ctl.stop(), self._loop).result(timeout=15)
-            self._thread.join(timeout=15)
+            fut = asyncio.run_coroutine_threadsafe(self._ctl.stop(), self._loop)
+            try:
+                fut.result(timeout=60)
+            except concurrent.futures.TimeoutError:
+                pass                       # still sending the last readings; the thread exits on its own
+            self._thread.join(timeout=1)
